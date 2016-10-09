@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/roots/roots-cli/Godeps/_workspace/src/github.com/hashicorp/go-version"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	version "github.com/hashicorp/go-version"
 )
 
 func check(err error) {
