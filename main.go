@@ -25,6 +25,8 @@ func checkMsg(err error, msg string) {
 
 func checkTrellisRequirements() {
 	checkAnsible()
+	checkVirtualbox()
+	checkVagrant()
 }
 
 func checkAnsible() {
@@ -43,6 +45,46 @@ func checkAnsible() {
 
 	if !constraint.Check(userVersion) {
 		fmt.Println("Invalid version of ansible. We require " + acceptableVersions)
+		os.Exit(1)
+	}
+}
+
+func checkVirtualbox() {
+	vboxManage, err := exec.LookPath("VboxManage")
+	checkMsg(err, "You need VirtualBox")
+	vboxVersionCommand := exec.Command(vboxManage, "--version")
+	vboxVersionOutput, err := vboxVersionCommand.Output()
+	versionText := string(vboxVersionOutput)
+	versionArray := strings.Split(versionText, "r")
+	userVersion, err := version.NewVersion(versionArray[0])
+	check(err)
+
+	acceptableVersions := ">= 4.3.10"
+	constraint, err := version.NewConstraint(acceptableVersions)
+	check(err)
+
+	if !constraint.Check(userVersion) {
+		fmt.Println("Invalid version of VirtualBox. We require " + acceptableVersions)
+		os.Exit(1)
+	}
+}
+
+func checkVagrant() {
+	vagrantCmd, err := exec.LookPath("vagrant")
+	checkMsg(err, "You need vagrant")
+	vagrantVersionCommand := exec.Command(vagrantCmd, "--version")
+	vagrantVersionOutput, err := vagrantVersionCommand.Output()
+	versionText := string(vagrantVersionOutput)
+	versionArray := strings.Split(versionText, " ")
+	userVersion, err := version.NewVersion(strings.Trim(versionArray[1], "\n"))
+	check(err)
+
+	acceptableVersions := ">= 1.8.5"
+	constraint, err := version.NewConstraint(acceptableVersions)
+	check(err)
+
+	if !constraint.Check(userVersion) {
+		fmt.Println("Invalid version of Vagrant. We require " + acceptableVersions)
 		os.Exit(1)
 	}
 }
