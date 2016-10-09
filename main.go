@@ -24,16 +24,20 @@ func checkMsg(err error, msg string) {
 }
 
 func checkTrellisRequirements() {
-	ansiblePlaybook, err := exec.LookPath("ansible-playbook")
-	checkMsg(err, "You need ansible-playbook")
-	ansibleVersionCommand := exec.Command(ansiblePlaybook, "--version")
+	checkAnsible()
+}
+
+func checkAnsible() {
+	ansibleCmd, err := exec.LookPath("ansible")
+	checkMsg(err, "You need ansible")
+	ansibleVersionCommand := exec.Command(ansibleCmd, "--version")
 	ansibleVersionOutput, err := ansibleVersionCommand.Output()
 	versionText := string(ansibleVersionOutput)
 	versionArray := strings.Split(versionText, "\n")
 	userVersion, err := version.NewVersion(strings.Split(versionArray[0], " ")[1])
 	check(err)
 
-	acceptableVersions := ">= 1.9.2, < 2.0.0"
+	acceptableVersions := ">= 2.0.2.0"
 	constraint, err := version.NewConstraint(acceptableVersions)
 	check(err)
 
