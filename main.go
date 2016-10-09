@@ -57,12 +57,24 @@ func cloneRepo(repo string, location string) {
 	gitCommand.Run()
 }
 
-func scaffoldProject(args []string) {
-	target, err := filepath.Abs(args[0])
-	check(err)
+func generateTrellis(args []string) {
 	checkTrellisRequirements()
+	var target string
+	var err error
+	if len(args) == 0 {
+		target, err = filepath.Abs("trellis")
+	} else {
+		target, err = filepath.Abs(args[0])
+	}
+	check(err)
 	cloneRepo("trellis", target)
 	fmt.Println(target)
+}
+
+func scaffoldProject(args []string) {
+	if args[0] == "trellis" {
+		generateTrellis(args[1:])
+	}
 }
 
 func main() {
